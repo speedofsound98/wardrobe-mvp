@@ -1,76 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Wardrobe MVP
 
-## Getting Started
+A personal wardrobe manager built with Next.js, Tailwind CSS, and TypeScript. Add clothing items, browse your wardrobe, and get rule-based outfit suggestions.
 
-First, run the development server:
+## Setup
 
 ```bash
+# 1. Clone the repo and enter the project directory
+git clone https://github.com/speedofsound98/wardrobe-mvp.git
+cd wardrobe-mvp
+
+# 2. Install dependencies
+npm install
+
+# 3. Add your Cloudinary credentials
+cp .env.example .env.local
+# then fill in CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
+
+# 4. Start the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a `.env.local` file in the project root:
 
-## Learn More
+```
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
 
-To learn more about Next.js, take a look at the following resources:
+Images are uploaded to Cloudinary and stored by URL. Item metadata is persisted in `localStorage`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-
-wardrobe-mvp
+```
+wardrobe-mvp/
 │
-├── node_modules
-├── public
-│
-├── src
+├── src/
+│   ├── app/
+│   │   ├── page.tsx          # Home dashboard
+│   │   ├── wardrobe/         # Browse & filter items
+│   │   ├── add/              # Add new item
+│   │   ├── edit/[id]/        # Edit existing item
+│   │   ├── outfit/           # Outfit generator
+│   │   └── api/upload/       # Cloudinary upload endpoint
 │   │
-│   ├── app
-│   │   ├── add
-│   │   │   └── page.tsx
-│   │   │
-│   │   ├── wardrobe
-│   │   │   └── page.tsx
-│   │   │
-│   │   ├── outfit
-│   │   │   └── page.tsx
-│   │   │
-│   │   ├── globals.css
-│   │   ├── layout.tsx
-│   │   └── page.tsx
-│   │
-│   ├── components
+│   ├── components/
+│   │   ├── Nav.tsx
 │   │   ├── FilterBar.tsx
 │   │   ├── ItemCard.tsx
 │   │   ├── ItemForm.tsx
 │   │   └── OutfitCard.tsx
 │   │
-│   ├── lib
-│   │   ├── outfitEngine.ts
-│   │   ├── storage.ts
-│   │   └── types.ts
-│   │
-│   └── styles (optional later)
+│   └── lib/
+│       ├── types.ts          # Shared TypeScript types
+│       ├── storage.ts        # localStorage CRUD + constants
+│       └── outfitEngine.ts   # Rule-based outfit scoring
 │
+├── .env.local                # Cloudinary credentials (not committed)
 ├── package.json
-├── tailwind.config.ts
-├── tsconfig.json
-└── next.config.js
+└── tsconfig.json
+```
+
+## Tech stack
+
+- [Next.js 16](https://nextjs.org) (App Router)
+- [Tailwind CSS](https://tailwindcss.com)
+- [Cloudinary](https://cloudinary.com) — image storage
+- [Lucide React](https://lucide.dev) — icons
+- `localStorage` — item metadata persistence
