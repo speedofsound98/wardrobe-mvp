@@ -20,6 +20,8 @@ export const SEASON_OPTIONS = ["all", "spring", "summer", "autumn", "winter"] as
 export const EMPTY_FORM: WardrobeFormValues = {
   name: "",
   imageUrl: "",
+  sourceType: "manual",
+  sourceValue: "",
   category: "top",
   subcategory: "",
   color: "black",

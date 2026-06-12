@@ -29,6 +29,7 @@ export default function AddPage() {
 
     if (json.url) {
       updateField("imageUrl", json.url);
+      updateField("sourceType", "photo");
     }
   }
 

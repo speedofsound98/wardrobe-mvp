@@ -36,13 +36,32 @@ export default function ItemForm({
         />
       </div>
 
-      <div className="md:col-span-2 flex items-center gap-6">
-        <div>
-          <label className="mb-1 block text-sm font-medium">Photo</label>
-          <input type="file" accept="image/*" onChange={handleImageUpload} disabled={disabled} className="block w-full text-sm" />
-        </div>
-        {form.imageUrl && (
-          <img src={form.imageUrl} alt="preview" className="h-24 w-24 rounded-2xl object-cover shrink-0" />
+      <div>
+        <label className="mb-1 block text-sm font-medium">Upload photo</label>
+        <label className={`flex cursor-pointer items-center gap-2 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          {form.sourceType === "photo" ? "Change photo" : "Choose file"}
+          <input type="file" accept="image/*" onChange={handleImageUpload} disabled={disabled} className="sr-only" />
+        </label>
+        {form.imageUrl && form.sourceType === "photo" && (
+          <img src={form.imageUrl} alt="preview" className="mt-2 h-20 w-20 rounded-2xl object-cover" />
+        )}
+      </div>
+
+      <div>
+        <label className="mb-1 block text-sm font-medium">Or paste image URL</label>
+        <input
+          value={form.sourceValue}
+          onChange={(e) => {
+            updateField("sourceValue", e.target.value);
+            updateField("sourceType", e.target.value ? "link" : "manual");
+            if (e.target.value) updateField("imageUrl", e.target.value);
+          }}
+          placeholder="https://..."
+          className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none placeholder:text-slate-400 focus:border-slate-400"
+        />
+        {form.imageUrl && form.sourceType === "link" && (
+          <img src={form.imageUrl} alt="preview" className="mt-2 h-20 w-20 rounded-2xl object-cover" />
         )}
       </div>
 
