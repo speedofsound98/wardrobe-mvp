@@ -12,6 +12,7 @@ type ItemFormProps = {
   handleImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (event: React.FormEvent) => void;
   submitLabel: string;
+  disabled?: boolean;
 };
 
 export default function ItemForm({
@@ -20,6 +21,7 @@ export default function ItemForm({
   handleImageUpload,
   onSubmit,
   submitLabel,
+  disabled = false,
 }: ItemFormProps) {
   return (
     <form onSubmit={onSubmit} className="grid gap-4 md:grid-cols-2">
@@ -37,6 +39,9 @@ export default function ItemForm({
       <div>
         <label className="mb-1 block text-sm font-medium">Upload photo</label>
         <input type="file" accept="image/*" onChange={handleImageUpload} className="block w-full text-sm" />
+        {form.imageUrl && form.sourceType === "photo" && (
+          <img src={form.imageUrl} alt="preview" className="mt-2 h-24 w-24 rounded-2xl object-cover" />
+        )}
       </div>
 
       <div>
@@ -145,7 +150,8 @@ export default function ItemForm({
 
         <button
           type="submit"
-          className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-700"
+          disabled={disabled}
+          className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-700 disabled:opacity-50"
         >
           {submitLabel}
         </button>
