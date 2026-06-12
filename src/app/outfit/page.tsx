@@ -7,7 +7,11 @@ import { generateOutfit } from "@/lib/outfitEngine";
 import type { WardrobeItem } from "@/lib/types";
 
 export default function OutfitPage() {
-  const [items] = useState<WardrobeItem[]>(loadItems);
+  const [items, setItems] = useState<WardrobeItem[]>([]);
+
+  useEffect(() => {
+    setItems(loadItems());
+  }, []);
   const [occasion, setOccasion] = useState("casual");
   const [weather, setWeather] = useState("mild");
 
