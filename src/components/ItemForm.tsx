@@ -4,7 +4,7 @@ import {
   OCCASION_OPTIONS,
   SEASON_OPTIONS,
 } from "@/lib/storage";
-import type { WardrobeFormValues } from "@/lib/types";
+import type { WardrobeCategory, WardrobeFormValues } from "@/lib/types";
 
 type ItemFormProps = {
   form: WardrobeFormValues;
@@ -57,7 +57,7 @@ export default function ItemForm({
         <label className="mb-1 block text-sm font-medium">Category</label>
         <select
           value={form.category}
-          onChange={(e) => updateField("category", e.target.value)}
+          onChange={(e) => updateField("category", e.target.value as WardrobeCategory)}
           className="w-full rounded-2xl border border-slate-200 px-4 py-3"
         >
           {CATEGORY_OPTIONS.map((option) => (

@@ -1,14 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import ItemCard from "@/components/ItemCard";
 import FilterBar from "@/components/FilterBar";
 import { CATEGORY_OPTIONS, loadItems, saveItems } from "@/lib/storage";
 import type { WardrobeItem } from "@/lib/types";
 
-export default function WardrobePage() {
+function WardrobeContent() {
+  const searchParams = useSearchParams();
   const [items, setItems] = useState<WardrobeItem[]>([]);
-  const [filterCategory, setFilterCategory] = useState("all");
+  const [filterCategory, setFilterCategory] = useState(searchParams.get("category") ?? "all");
 
   useEffect(() => {
     setItems(loadItems());
@@ -34,12 +36,7 @@ export default function WardrobePage() {
   }
 
   return (
-    <main className="mx-auto max-w-7xl px-6 py-10">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-slate-900">Your wardrobe</h1>
-        <p className="mt-2 text-slate-600">Filter and manage the clothing items you added.</p>
-      </div>
-
+    <>
       <FilterBar
         value={filterCategory}
         onChange={setFilterCategory}
@@ -62,6 +59,20 @@ export default function WardrobePage() {
           ))}
         </div>
       )}
+    </>
+  );
+}
+
+export default function WardrobePage() {
+  return (
+    <main className="mx-auto max-w-7xl px-6 py-10">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-slate-900">Your wardrobe</h1>
+        <p className="mt-2 text-slate-600">Filter and manage the clothing items you added.</p>
+      </div>
+      <Suspense>
+        <WardrobeContent />
+      </Suspense>
     </main>
   );
 }

@@ -57,4 +57,16 @@ export function generateOutfit(items: WardrobeItem[], occasion: string, weather:
           if (shoe.favorite) score += 1;
           if (jacket?.favorite) score += 1;
           if (weather === "cold" && jacket) score += 2;
-          if (occasion
+          if (occasion === "work" && jacket) score += 1;
+
+          if (score > bestScore) {
+            bestScore = score;
+            best = { top, bottom, shoe, jacket: jacket ?? null, score };
+          }
+        }
+      }
+    }
+  }
+
+  return best;
+}
