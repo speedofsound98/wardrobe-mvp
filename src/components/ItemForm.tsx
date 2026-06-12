@@ -36,26 +36,14 @@ export default function ItemForm({
         />
       </div>
 
-      <div>
-        <label className="mb-1 block text-sm font-medium">Upload photo</label>
-        <input type="file" accept="image/*" onChange={handleImageUpload} className="block w-full text-sm" />
-        {form.imageUrl && form.sourceType === "photo" && (
-          <img src={form.imageUrl} alt="preview" className="mt-2 h-24 w-24 rounded-2xl object-cover" />
+      <div className="md:col-span-2 flex items-center gap-6">
+        <div>
+          <label className="mb-1 block text-sm font-medium">Photo</label>
+          <input type="file" accept="image/*" onChange={handleImageUpload} disabled={disabled} className="block w-full text-sm" />
+        </div>
+        {form.imageUrl && (
+          <img src={form.imageUrl} alt="preview" className="h-24 w-24 rounded-2xl object-cover shrink-0" />
         )}
-      </div>
-
-      <div>
-        <label className="mb-1 block text-sm font-medium">Image or product link</label>
-        <input
-          value={form.sourceValue}
-          onChange={(e) => {
-            updateField("sourceValue", e.target.value);
-            updateField("sourceType", e.target.value ? "link" : "manual");
-            if (!form.imageUrl && e.target.value) updateField("imageUrl", e.target.value);
-          }}
-          placeholder="https://..."
-          className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none placeholder:text-slate-400 focus:border-slate-400"
-        />
       </div>
 
       <div>
