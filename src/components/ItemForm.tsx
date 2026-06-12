@@ -13,6 +13,7 @@ type ItemFormProps = {
   onSubmit: (event: React.FormEvent) => void;
   submitLabel: string;
   disabled?: boolean;
+  previewUrl?: string | null;
 };
 
 export default function ItemForm({
@@ -22,6 +23,7 @@ export default function ItemForm({
   onSubmit,
   submitLabel,
   disabled = false,
+  previewUrl = null,
 }: ItemFormProps) {
   return (
     <form onSubmit={onSubmit} className="grid gap-4 md:grid-cols-2">
@@ -43,8 +45,12 @@ export default function ItemForm({
           {form.sourceType === "photo" ? "Change photo" : "Choose file"}
           <input type="file" accept="image/*" onChange={handleImageUpload} disabled={disabled} className="sr-only" />
         </label>
-        {form.imageUrl && form.sourceType === "photo" && (
-          <img src={form.imageUrl} alt="preview" className="mt-2 h-20 w-20 rounded-2xl object-cover" />
+        {(previewUrl || (form.imageUrl && form.sourceType === "photo")) && (
+          <img
+            src={previewUrl ?? form.imageUrl}
+            alt="preview"
+            className={`mt-2 h-20 w-20 rounded-2xl object-cover ${previewUrl ? "opacity-60" : ""}`}
+          />
         )}
       </div>
 

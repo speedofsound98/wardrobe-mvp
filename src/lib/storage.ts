@@ -52,3 +52,11 @@ export function saveItems(items: WardrobeItem[]) {
   if (typeof window === "undefined") return;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
 }
+
+export function updateItem(id: string, values: WardrobeFormValues) {
+  const items = loadItems();
+  const updated = items.map((item) =>
+    item.id === id ? { ...item, ...values } : item
+  );
+  saveItems(updated);
+}

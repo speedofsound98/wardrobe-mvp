@@ -1,4 +1,5 @@
-import { Heart, Shirt, Trash2 } from "lucide-react";
+import { Heart, Pencil, Shirt, Trash2 } from "lucide-react";
+import Link from "next/link";
 import type { WardrobeItem } from "@/lib/types";
 
 type ItemCardProps = {
@@ -37,7 +38,14 @@ export default function ItemCard({ item, onDelete, onToggleFavorite }: ItemCardP
         </button>
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+        <Link
+          href={`/edit/${item.id}`}
+          className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+        >
+          <Pencil className="h-4 w-4" />
+          Edit
+        </Link>
         <button
           onClick={() => onDelete(item.id)}
           className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"

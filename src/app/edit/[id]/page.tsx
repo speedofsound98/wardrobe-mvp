@@ -1,16 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import ItemForm from "@/components/ItemForm";
-import { EMPTY_FORM, loadItems, saveItems, uid } from "@/lib/storage";
+import { loadItems, updateItem } from "@/lib/storage";
 import type { WardrobeFormValues } from "@/lib/types";
 
-export default function AddPage() {
+export default function EditPage() {
+  const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const [form, setForm] = useState<WardrobeFormValues>(EMPTY_FORM);
+
+  const item = loadItems().find((i) => i.id === id);
+
+  const [form, setForm] = useState<WardrobeFormValues>(() => {
+    if (!item) return { name: "", imageUrl: "", sourceType: "manual", sourceValue: "", category: "top", subcategory: "", color: "black", season: "all", occasion: "casual", material: "", favorite: false };
+    const { id: _id, createdAt: _c, ...values } = item;
+    return values;
+  });
+
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  if (!item) {
+    return (
+      <main className="mx-auto max-w-4xl px-6 py-10">
+        <p className="text-slate-500">Item not found.</p>
+      </main>
+    );
+  }
 
   function updateField<K extends keyof WardrobeFormValues>(field: K, value: WardrobeFormValues[K]) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -20,7 +37,6 @@ export default function AddPage() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // show local preview immediately while upload is in flight
     const localUrl = URL.createObjectURL(file);
     setPreviewUrl(localUrl);
 
@@ -43,23 +59,15 @@ export default function AddPage() {
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     if (uploading) return;
-
-    const items = loadItems();
-    const newItem = {
-      id: uid(),
-      ...form,
-      createdAt: new Date().toISOString(),
-    };
-
-    saveItems([newItem, ...items]);
+    updateItem(id, form);
     router.push("/wardrobe");
   }
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-10">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-slate-900">Add clothing item</h1>
-        <p className="mt-2 text-slate-600">Upload a photo and fill in the details.</p>
+        <h1 className="text-3xl font-bold text-slate-900">Edit item</h1>
+        <p className="mt-2 text-slate-600">Update the details for {item.name || "this item"}.</p>
       </div>
 
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -68,7 +76,7 @@ export default function AddPage() {
           updateField={updateField}
           handleImageUpload={handleImageUpload}
           onSubmit={handleSubmit}
-          submitLabel={uploading ? "Uploading…" : "Save item"}
+          submitLabel={uploading ? "Uploading…" : "Save changes"}
           disabled={uploading}
           previewUrl={previewUrl}
         />
