@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import ItemCard from "@/components/ItemCard";
 import FilterBar from "@/components/FilterBar";
@@ -9,17 +9,10 @@ import type { WardrobeItem } from "@/lib/types";
 
 function WardrobeContent() {
   const searchParams = useSearchParams();
-  const [items, setItems] = useState<WardrobeItem[]>([]);
+  const [items, setItems] = useState<WardrobeItem[]>(loadItems);
   const [filterCategory, setFilterCategory] = useState(searchParams.get("category") ?? "all");
-  const loaded = useRef(false);
 
   useEffect(() => {
-    setItems(loadItems());
-    loaded.current = true;
-  }, []);
-
-  useEffect(() => {
-    if (!loaded.current) return;
     saveItems(items);
   }, [items]);
 

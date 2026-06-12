@@ -7,13 +7,9 @@ import { generateOutfit } from "@/lib/outfitEngine";
 import type { WardrobeItem } from "@/lib/types";
 
 export default function OutfitPage() {
-  const [items, setItems] = useState<WardrobeItem[]>([]);
+  const [items] = useState<WardrobeItem[]>(loadItems);
   const [occasion, setOccasion] = useState("casual");
   const [weather, setWeather] = useState("mild");
-
-  useEffect(() => {
-    setItems(loadItems());
-  }, []);
 
   const outfit = useMemo(() => generateOutfit(items, occasion, weather), [items, occasion, weather]);
 

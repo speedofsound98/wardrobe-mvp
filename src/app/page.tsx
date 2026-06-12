@@ -9,11 +9,7 @@ import type { WardrobeCategory, WardrobeItem } from "@/lib/types";
 const CATEGORIES: WardrobeCategory[] = ["top", "bottom", "shoes", "outerwear", "accessory"];
 
 export default function HomePage() {
-  const [items, setItems] = useState<WardrobeItem[]>([]);
-
-  useEffect(() => {
-    setItems(loadItems());
-  }, []);
+  const [items, setItems] = useState<WardrobeItem[]>(loadItems);
 
   const lastAdded = items[0];
   const countByCategory = Object.fromEntries(
