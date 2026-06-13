@@ -29,16 +29,15 @@ function weatherScore(item: WardrobeItem | null, weather: string) {
   return 1;
 }
 
-export function generateOutfit(items: WardrobeItem[], occasion: string, weather: string): OutfitResult | null {
+export function generateOutfits(items: WardrobeItem[], occasion: string, weather: string, topN = 10): OutfitResult[] {
   const tops = items.filter((item) => item.category === "top");
   const bottoms = items.filter((item) => item.category === "bottom");
   const shoes = items.filter((item) => item.category === "shoes");
   const outerwear = items.filter((item) => item.category === "outerwear");
 
-  if (!tops.length || !bottoms.length || !shoes.length) return null;
+  if (!tops.length || !bottoms.length || !shoes.length) return [];
 
-  let best: OutfitResult | null = null;
-  let bestScore = -Infinity;
+  const results: OutfitResult[] = [];
 
   for (const top of tops) {
     for (const bottom of bottoms) {
@@ -59,14 +58,12 @@ export function generateOutfit(items: WardrobeItem[], occasion: string, weather:
           if (weather === "cold" && jacket) score += 2;
           if (occasion === "work" && jacket) score += 1;
 
-          if (score > bestScore) {
-            bestScore = score;
-            best = { top, bottom, shoe, jacket: jacket ?? null, score };
-          }
+          results.push({ top, bottom, shoe, jacket: jacket ?? null, score });
         }
       }
     }
   }
 
-  return best;
+  results.sort((a, b) => b.score - a.score);
+  return results.slice(0, topN);
 }

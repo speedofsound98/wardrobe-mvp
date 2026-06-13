@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shirt, PlusCircle, Sparkles, LayoutDashboard } from "lucide-react";
+import { Shirt, PlusCircle, Sparkles, LayoutDashboard, BookMarked } from "lucide-react";
 
 const links = [
   { href: "/", label: "Home", icon: LayoutDashboard },
   { href: "/wardrobe", label: "Wardrobe", icon: Shirt },
   { href: "/add", label: "Add item", icon: PlusCircle },
   { href: "/outfit", label: "Outfit", icon: Sparkles },
+  { href: "/outfits", label: "Saved", icon: BookMarked },
 ];
 
 export default function Nav() {

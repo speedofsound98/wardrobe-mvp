@@ -1,4 +1,4 @@
-import type { WardrobeFormValues, WardrobeItem } from "./types";
+import type { SavedOutfit, WardrobeFormValues, WardrobeItem } from "./types";
 
 export const CATEGORY_OPTIONS = ["top", "bottom", "shoes", "outerwear", "accessory"] as const;
 export const OCCASION_OPTIONS = ["casual", "work", "date", "travel", "gym"] as const;
@@ -51,6 +51,28 @@ export function loadItems(): WardrobeItem[] {
 export function saveItems(items: WardrobeItem[]) {
   if (typeof window === "undefined") return;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+}
+
+const OUTFITS_KEY = "wardrobe_saved_outfits_v1";
+
+export function loadSavedOutfits(): SavedOutfit[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(OUTFITS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveOutfit(outfit: SavedOutfit) {
+  const outfits = loadSavedOutfits();
+  localStorage.setItem(OUTFITS_KEY, JSON.stringify([outfit, ...outfits]));
+}
+
+export function deleteSavedOutfit(id: string) {
+  const outfits = loadSavedOutfits().filter((o) => o.id !== id);
+  localStorage.setItem(OUTFITS_KEY, JSON.stringify(outfits));
 }
 
 export function updateItem(id: string, values: WardrobeFormValues) {

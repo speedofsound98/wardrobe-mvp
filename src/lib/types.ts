@@ -26,3 +26,11 @@ export type OutfitResult = {
   jacket: WardrobeItem | null;
   score: number;
 };
+
+export type SavedOutfit = {
+  id: string;
+  occasion: string;
+  weather: string;
+  savedAt: string;
+  outfit: OutfitResult;
+};
