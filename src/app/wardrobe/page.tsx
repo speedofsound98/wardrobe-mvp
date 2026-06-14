@@ -57,7 +57,7 @@ function WardrobeContent() {
     return (
       <>
         <FilterBar value={filterCategory} onChange={setFilterCategory} options={["all", ...CATEGORY_OPTIONS]} />
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
         </div>
       </>
@@ -87,7 +87,7 @@ function WardrobeContent() {
           No items in this category.
         </div>
       ) : (
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredItems.map((item) => (
             <ItemCard key={item.id} item={item} onDelete={handleDelete} onToggleFavorite={handleToggleFavorite} />
           ))}
