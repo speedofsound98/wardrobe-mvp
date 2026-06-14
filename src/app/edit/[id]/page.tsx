@@ -1,33 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import ItemForm from "@/components/ItemForm";
 import { loadItems, updateItem } from "@/lib/storage";
-import type { WardrobeFormValues } from "@/lib/types";
+import type { WardrobeFormValues, WardrobeItem } from "@/lib/types";
+
+const EMPTY_FORM: WardrobeFormValues = {
+  name: "", imageUrl: "", sourceType: "manual", sourceValue: "",
+  category: "top", subcategory: "", color: "black", season: "all",
+  occasion: "casual", material: "", favorite: false,
+};
 
 export default function EditPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
 
-  const item = loadItems().find((i) => i.id === id);
-
-  const [form, setForm] = useState<WardrobeFormValues>(() => {
-    if (!item) return { name: "", imageUrl: "", sourceType: "manual", sourceValue: "", category: "top", subcategory: "", color: "black", season: "all", occasion: "casual", material: "", favorite: false };
-    const { id: _id, createdAt: _c, ...values } = item;
-    return values;
-  });
-
+  const [item, setItem] = useState<WardrobeItem | null | "loading">("loading");
+  const [form, setForm] = useState<WardrobeFormValues>(EMPTY_FORM);
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  if (!item) {
-    return (
-      <main className="mx-auto max-w-4xl px-6 py-10">
-        <p className="text-slate-500">Item not found.</p>
-      </main>
-    );
-  }
+  useEffect(() => {
+    const found = loadItems().find((i) => i.id === id) ?? null;
+    setItem(found);
+    if (found) {
+      const { id: _id, createdAt: _c, ...values } = found;
+      setForm(values);
+    }
+  }, [id]);
 
   function updateField<K extends keyof WardrobeFormValues>(field: K, value: WardrobeFormValues[K]) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -39,11 +40,10 @@ export default function EditPage() {
 
     const localUrl = URL.createObjectURL(file);
     setPreviewUrl(localUrl);
-
     setUploading(true);
+
     const data = new FormData();
     data.append("file", file);
-
     const res = await fetch("/api/upload", { method: "POST", body: data });
     const json = await res.json();
     setUploading(false);
@@ -61,6 +61,16 @@ export default function EditPage() {
     if (uploading) return;
     updateItem(id, form);
     router.push("/wardrobe");
+  }
+
+  if (item === "loading") return null;
+
+  if (!item) {
+    return (
+      <main className="mx-auto max-w-4xl px-6 py-10">
+        <p className="text-slate-500">Item not found.</p>
+      </main>
+    );
   }
 
   return (
