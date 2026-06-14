@@ -11,6 +11,7 @@ export default function AddPage() {
   const [form, setForm] = useState<WardrobeFormValues>(EMPTY_FORM);
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   function updateField<K extends keyof WardrobeFormValues>(field: K, value: WardrobeFormValues[K]) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -25,6 +26,7 @@ export default function AddPage() {
     setPreviewUrl(localUrl);
 
     setUploading(true);
+    setUploadError(null);
     const data = new FormData();
     data.append("file", file);
 
@@ -36,6 +38,9 @@ export default function AddPage() {
       updateField("imageUrl", json.url);
       updateField("sourceType", "photo");
       URL.revokeObjectURL(localUrl);
+      setPreviewUrl(null);
+    } else {
+      setUploadError(json.error ?? "Upload failed. Please try again.");
       setPreviewUrl(null);
     }
   }
@@ -62,6 +67,11 @@ export default function AddPage() {
         <p className="mt-2 text-slate-600">Upload a photo and fill in the details.</p>
       </div>
 
+      {uploadError && (
+        <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {uploadError}
+        </div>
+      )}
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <ItemForm
           form={form}

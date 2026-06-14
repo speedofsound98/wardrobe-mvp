@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Wardrobe",
+  title: { default: "Wardrobe", template: "%s · Wardrobe" },
   description: "Your personal wardrobe manager",
 };
 

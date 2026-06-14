@@ -8,17 +8,53 @@ import type { WardrobeCategory, WardrobeItem } from "@/lib/types";
 
 const CATEGORIES: WardrobeCategory[] = ["top", "bottom", "shoes", "outerwear", "accessory"];
 
+const ONBOARDING_STEPS = [
+  { href: "/add", icon: PlusCircle, label: "Add a clothing item", description: "Upload a photo and fill in the details." },
+  { href: "/outfit", icon: Sparkles, label: "Generate an outfit", description: "Pick an occasion and weather to get a suggestion." },
+  { href: "/outfits", icon: Shirt, label: "Save your favourites", description: "Bookmark outfits you want to wear again." },
+];
+
 export default function HomePage() {
   const [items, setItems] = useState<WardrobeItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setItems(loadItems());
+    setLoading(false);
   }, []);
 
   const lastAdded = items[0];
   const countByCategory = Object.fromEntries(
     CATEGORIES.map((cat) => [cat, items.filter((i) => i.category === cat).length])
   );
+
+  if (!loading && items.length === 0) {
+    return (
+      <main className="mx-auto max-w-2xl px-6 py-16 text-center">
+        <h1 className="text-3xl font-bold text-slate-900">Welcome to your wardrobe</h1>
+        <p className="mt-2 text-slate-500">Get started in three steps.</p>
+
+        <div className="mt-10 space-y-3 text-left">
+          {ONBOARDING_STEPS.map(({ href, icon: Icon, label, description }, i) => (
+            <Link
+              key={href}
+              href={href}
+              className="flex items-center gap-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-400"
+            >
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-white text-sm font-bold">
+                {i + 1}
+              </div>
+              <div>
+                <p className="font-semibold text-slate-900">{label}</p>
+                <p className="text-sm text-slate-500">{description}</p>
+              </div>
+              <Icon className="ml-auto h-5 w-5 shrink-0 text-slate-400" />
+            </Link>
+          ))}
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-10">
@@ -55,12 +91,18 @@ export default function HomePage() {
                 </div>
               )}
             </div>
-            <div>
-              <p className="font-semibold text-slate-900">{lastAdded.name || "Untitled item"}</p>
+            <div className="min-w-0">
+              <p className="truncate font-semibold text-slate-900">{lastAdded.name || "Untitled item"}</p>
               <p className="text-sm capitalize text-slate-500">
                 {lastAdded.category} · {lastAdded.color} · {lastAdded.occasion}
               </p>
             </div>
+            <Link
+              href={`/edit/${lastAdded.id}`}
+              className="ml-auto shrink-0 rounded-xl border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50"
+            >
+              Edit
+            </Link>
           </div>
         </div>
       )}
@@ -89,16 +131,6 @@ export default function HomePage() {
           <span className="font-medium text-slate-800">Pick an outfit</span>
         </Link>
       </div>
-
-      {items.length === 0 && (
-        <div className="mt-8 rounded-3xl border border-dashed border-slate-300 p-12 text-center text-slate-400">
-          No items yet.{" "}
-          <Link href="/add" className="font-medium text-slate-700 underline underline-offset-2">
-            Add your first item
-          </Link>{" "}
-          to get started.
-        </div>
-      )}
     </main>
   );
 }

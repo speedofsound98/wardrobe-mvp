@@ -18,14 +18,18 @@ export async function POST(req: NextRequest) {
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 
-  const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
-    cloudinary.uploader
-      .upload_stream({ folder: "wardrobe-mvp" }, (error, result) => {
-        if (error || !result) return reject(error);
-        resolve(result);
-      })
-      .end(buffer);
-  });
-
-  return NextResponse.json({ url: result.secure_url });
+  try {
+    const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream({ folder: "wardrobe-mvp" }, (error, result) => {
+          if (error || !result) return reject(error);
+          resolve(result);
+        })
+        .end(buffer);
+    });
+    return NextResponse.json({ url: result.secure_url });
+  } catch (err) {
+    console.error("Cloudinary upload failed:", err);
+    return NextResponse.json({ error: "Upload failed. Please try again." }, { status: 500 });
+  }
 }
