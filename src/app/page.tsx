@@ -7,7 +7,7 @@ import { loadItems } from "@/lib/storage";
 import { useProfile } from "@/lib/useProfile";
 import type { WardrobeCategory, WardrobeItem } from "@/lib/types";
 
-const CATEGORIES: WardrobeCategory[] = ["top", "bottom", "shoes", "outerwear", "accessory"];
+const CATEGORIES: WardrobeCategory[] = ["top", "pants", "skirt", "dress", "shoes", "outerwear", "accessory"];
 
 const ONBOARDING_STEPS = [
   { href: "/add", icon: PlusCircle, label: "Add a clothing item", description: "Upload a photo and fill in the details." },
@@ -67,7 +67,7 @@ export default function HomePage() {
       </div>
 
       {/* Category breakdown */}
-      <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-5">
+      <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
         {CATEGORIES.map((cat) => (
           <Link
             key={cat}

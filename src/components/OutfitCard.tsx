@@ -32,7 +32,7 @@ export default function OutfitCard({ outfit, onSave }: OutfitCardProps) {
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
       {!outfit ? (
         <p className="text-slate-500">
-          Add at least one top, one bottom, and one pair of shoes to generate an outfit.
+          Add at least one pair of shoes and either a dress or a top + bottoms to generate an outfit.
         </p>
       ) : (
         <div className="space-y-3">
@@ -42,8 +42,15 @@ export default function OutfitCard({ outfit, onSave }: OutfitCardProps) {
               Score {outfit.score}
             </span>
           </div>
-          <ItemThumb item={outfit.top} label="Top" />
-          <ItemThumb item={outfit.bottom} label="Bottom" />
+          {outfit.dress ? (
+            <ItemThumb item={outfit.dress} label="Dress" />
+          ) : (
+            <>
+              {outfit.top && <ItemThumb item={outfit.top} label="Top" />}
+              {outfit.bottom && <ItemThumb item={outfit.bottom} label="Bottoms" />}
+            </>
+          )}
+          {outfit.top && outfit.dress && <ItemThumb item={outfit.top} label="Top layer" />}
           <ItemThumb item={outfit.shoe} label="Shoes" />
           {outfit.jacket && <ItemThumb item={outfit.jacket} label="Outerwear" />}
 

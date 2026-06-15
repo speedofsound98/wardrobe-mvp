@@ -1,7 +1,7 @@
 import type { SavedOutfit, WardrobeFormValues, WardrobeItem } from "./types";
 import { type Profile, getActiveProfile, getStorageKey } from "./profiles";
 
-export const CATEGORY_OPTIONS = ["top", "bottom", "shoes", "outerwear", "accessory"] as const;
+export const CATEGORY_OPTIONS = ["top", "pants", "skirt", "dress", "shoes", "outerwear", "accessory"] as const;
 export const OCCASION_OPTIONS = ["casual", "work", "date", "travel", "gym", "running", "formal", "wedding"] as const;
 export const WEATHER_OPTIONS = ["hot", "mild", "cold"] as const;
 export const COLOR_OPTIONS = [
@@ -51,7 +51,12 @@ export function loadItems(profile?: Profile): WardrobeItem[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(itemsKey(profile));
-    return raw ? JSON.parse(raw) : [];
+    const items: WardrobeItem[] = raw ? JSON.parse(raw) : [];
+    // migrate legacy "bottom" category to "pants"
+    return items.map((item) =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (item.category as any) === "bottom" ? { ...item, category: "pants" } : item
+    );
   } catch {
     return [];
   }

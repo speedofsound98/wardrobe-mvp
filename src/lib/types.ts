@@ -1,4 +1,4 @@
-export type WardrobeCategory = "top" | "bottom" | "shoes" | "outerwear" | "accessory";
+export type WardrobeCategory = "top" | "pants" | "skirt" | "dress" | "shoes" | "outerwear" | "accessory";
 export type SourceType = "manual" | "photo" | "link";
 
 export type WardrobeItem = {
@@ -20,8 +20,9 @@ export type WardrobeItem = {
 export type WardrobeFormValues = Omit<WardrobeItem, "id" | "createdAt">;
 
 export type OutfitResult = {
-  top: WardrobeItem;
-  bottom: WardrobeItem;
+  top: WardrobeItem | null;
+  bottom: WardrobeItem | null;
+  dress: WardrobeItem | null;
   shoe: WardrobeItem;
   jacket: WardrobeItem | null;
   score: number;
