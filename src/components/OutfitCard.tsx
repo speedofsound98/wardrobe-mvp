@@ -36,6 +36,12 @@ export default function OutfitCard({ outfit, onSave }: OutfitCardProps) {
         </p>
       ) : (
         <div className="space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Suggested outfit</p>
+            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600">
+              Score {outfit.score}
+            </span>
+          </div>
           <ItemThumb item={outfit.top} label="Top" />
           <ItemThumb item={outfit.bottom} label="Bottom" />
           <ItemThumb item={outfit.shoe} label="Shoes" />

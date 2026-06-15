@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Shirt, PlusCircle, Sparkles } from "lucide-react";
 import { loadItems } from "@/lib/storage";
+import { useProfile } from "@/lib/useProfile";
 import type { WardrobeCategory, WardrobeItem } from "@/lib/types";
 
 const CATEGORIES: WardrobeCategory[] = ["top", "bottom", "shoes", "outerwear", "accessory"];
@@ -15,13 +16,15 @@ const ONBOARDING_STEPS = [
 ];
 
 export default function HomePage() {
+  const [profile] = useProfile();
   const [items, setItems] = useState<WardrobeItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setItems(loadItems());
+    setLoading(true);
+    setItems(loadItems(profile));
     setLoading(false);
-  }, []);
+  }, [profile]);
 
   const lastAdded = items[0];
   const countByCategory = Object.fromEntries(

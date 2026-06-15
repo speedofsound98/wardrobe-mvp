@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import ItemForm from "@/components/ItemForm";
 import { loadItems, updateItem } from "@/lib/storage";
+import { useProfile } from "@/lib/useProfile";
 import type { WardrobeFormValues, WardrobeItem } from "@/lib/types";
 
 const EMPTY_FORM: WardrobeFormValues = {
@@ -15,6 +16,7 @@ const EMPTY_FORM: WardrobeFormValues = {
 export default function EditPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const [profile] = useProfile();
 
   const [item, setItem] = useState<WardrobeItem | null | "loading">("loading");
   const [form, setForm] = useState<WardrobeFormValues>(EMPTY_FORM);
@@ -22,7 +24,7 @@ export default function EditPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    const found = loadItems().find((i) => i.id === id) ?? null;
+    const found = loadItems(profile).find((i) => i.id === id) ?? null;
     setItem(found);
     if (found) {
       const { id: _id, createdAt: _c, ...values } = found;
@@ -59,7 +61,7 @@ export default function EditPage() {
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     if (uploading) return;
-    updateItem(id, form);
+    updateItem(id, form, profile);
     router.push("/wardrobe");
   }
 

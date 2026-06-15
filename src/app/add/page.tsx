@@ -4,10 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ItemForm from "@/components/ItemForm";
 import { EMPTY_FORM, loadItems, saveItems, uid } from "@/lib/storage";
+import { useProfile } from "@/lib/useProfile";
 import type { WardrobeFormValues } from "@/lib/types";
 
 export default function AddPage() {
   const router = useRouter();
+  const [profile] = useProfile();
   const [form, setForm] = useState<WardrobeFormValues>(EMPTY_FORM);
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -49,14 +51,14 @@ export default function AddPage() {
     event.preventDefault();
     if (uploading) return;
 
-    const items = loadItems();
+    const items = loadItems(profile);
     const newItem = {
       id: uid(),
       ...form,
       createdAt: new Date().toISOString(),
     };
 
-    saveItems([newItem, ...items]);
+    saveItems([newItem, ...items], profile);
     router.push("/wardrobe");
   }
 

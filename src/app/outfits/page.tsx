@@ -4,18 +4,20 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import { deleteSavedOutfit, loadSavedOutfits } from "@/lib/storage";
+import { useProfile } from "@/lib/useProfile";
 import type { SavedOutfit } from "@/lib/types";
 import OutfitCard from "@/components/OutfitCard";
 
 export default function OutfitsPage() {
+  const [profile] = useProfile();
   const [outfits, setOutfits] = useState<SavedOutfit[]>([]);
 
   useEffect(() => {
-    setOutfits(loadSavedOutfits());
-  }, []);
+    setOutfits(loadSavedOutfits(profile));
+  }, [profile]);
 
   function handleDelete(id: string) {
-    deleteSavedOutfit(id);
+    deleteSavedOutfit(id, profile);
     setOutfits((prev) => prev.filter((o) => o.id !== id));
   }
 

@@ -7,6 +7,7 @@ import ItemCard from "@/components/ItemCard";
 import FilterBar from "@/components/FilterBar";
 import { CATEGORY_OPTIONS, loadItems, saveItems } from "@/lib/storage";
 import { exportToCsv, importFromCsv } from "@/lib/csv";
+import { useProfile } from "@/lib/useProfile";
 import type { WardrobeItem } from "@/lib/types";
 import Link from "next/link";
 
@@ -22,23 +23,26 @@ function SkeletonCard() {
 
 function WardrobeContent() {
   const searchParams = useSearchParams();
+  const [profile] = useProfile();
   const [items, setItems] = useState<WardrobeItem[]>([]);
   const [filterCategory, setFilterCategory] = useState(searchParams.get("category") ?? "all");
   const [loading, setLoading] = useState(true);
   const initialized = useRef(false);
 
   useEffect(() => {
-    setItems(loadItems());
+    initialized.current = false;
+    setLoading(true);
+    setItems(loadItems(profile));
     setLoading(false);
-  }, []);
+  }, [profile]);
 
   useEffect(() => {
     if (!initialized.current) {
       initialized.current = true;
       return;
     }
-    saveItems(items);
-  }, [items]);
+    saveItems(items, profile);
+  }, [items, profile]);
 
   const filteredItems = useMemo(() => {
     if (filterCategory === "all") return items;

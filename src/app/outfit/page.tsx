@@ -5,9 +5,11 @@ import { RefreshCw } from "lucide-react";
 import OutfitCard from "@/components/OutfitCard";
 import { OCCASION_OPTIONS, WEATHER_OPTIONS, loadItems, saveOutfit, uid } from "@/lib/storage";
 import { generateOutfits } from "@/lib/outfitEngine";
+import { useProfile } from "@/lib/useProfile";
 import type { OutfitResult, WardrobeItem } from "@/lib/types";
 
 export default function OutfitPage() {
+  const [profile] = useProfile();
   const [items, setItems] = useState<WardrobeItem[]>([]);
   const [occasion, setOccasion] = useState("casual");
   const [weather, setWeather] = useState("mild");
@@ -15,8 +17,10 @@ export default function OutfitPage() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    setItems(loadItems());
-  }, []);
+    setItems(loadItems(profile));
+    setIndex(0);
+    setSaved(false);
+  }, [profile]);
 
   const outfits = generateOutfits(items, occasion, weather);
   const outfit: OutfitResult | null = outfits[index] ?? null;
@@ -34,7 +38,7 @@ export default function OutfitPage() {
 
   function handleSave() {
     if (!outfit) return;
-    saveOutfit({ id: uid(), occasion, weather, savedAt: new Date().toISOString(), outfit });
+    saveOutfit({ id: uid(), occasion, weather, savedAt: new Date().toISOString(), outfit }, profile);
     setSaved(true);
   }
 
