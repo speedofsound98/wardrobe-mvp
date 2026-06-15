@@ -17,6 +17,7 @@ export default function OutfitPage() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
+    if (!profile) return;
     setItems(loadItems(profile));
     setIndex(0);
     setSaved(false);
@@ -38,7 +39,7 @@ export default function OutfitPage() {
 
   function handleSave() {
     if (!outfit) return;
-    saveOutfit({ id: uid(), occasion, weather, savedAt: new Date().toISOString(), outfit }, profile);
+    saveOutfit({ id: uid(), occasion, weather, savedAt: new Date().toISOString(), outfit }, profile ?? undefined);
     setSaved(true);
   }
 

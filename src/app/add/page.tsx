@@ -51,14 +51,14 @@ export default function AddPage() {
     event.preventDefault();
     if (uploading) return;
 
-    const items = loadItems(profile);
+    const items = loadItems(profile ?? undefined);
     const newItem = {
       id: uid(),
       ...form,
       createdAt: new Date().toISOString(),
     };
 
-    saveItems([newItem, ...items], profile);
+    saveItems([newItem, ...items], profile ?? undefined);
     router.push("/wardrobe");
   }
 

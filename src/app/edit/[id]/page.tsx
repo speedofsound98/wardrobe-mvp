@@ -24,6 +24,7 @@ export default function EditPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!profile) return;
     const found = loadItems(profile).find((i) => i.id === id) ?? null;
     setItem(found);
     if (found) {
@@ -61,7 +62,7 @@ export default function EditPage() {
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     if (uploading) return;
-    updateItem(id, form, profile);
+    updateItem(id, form, profile ?? undefined);
     router.push("/wardrobe");
   }
 

@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import { type Profile, getActiveProfile, setActiveProfile } from "./profiles";
 
-export function useProfile(): [Profile, (p: Profile) => void] {
-  const [profile, setProfile] = useState<Profile>(getActiveProfile);
+export function useProfile(): [Profile | null, (p: Profile) => void] {
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
+    setProfile(getActiveProfile());
 
     function onSwitch(e: Event) {
       setProfile((e as CustomEvent<Profile>).detail);

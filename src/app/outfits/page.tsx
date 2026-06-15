@@ -13,11 +13,12 @@ export default function OutfitsPage() {
   const [outfits, setOutfits] = useState<SavedOutfit[]>([]);
 
   useEffect(() => {
+    if (!profile) return;
     setOutfits(loadSavedOutfits(profile));
   }, [profile]);
 
   function handleDelete(id: string) {
-    deleteSavedOutfit(id, profile);
+    deleteSavedOutfit(id, profile ?? undefined);
     setOutfits((prev) => prev.filter((o) => o.id !== id));
   }
 

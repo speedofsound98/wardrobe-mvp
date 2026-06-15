@@ -21,6 +21,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!profile) return;
     setLoading(true);
     setItems(loadItems(profile));
     setLoading(false);

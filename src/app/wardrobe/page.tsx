@@ -30,6 +30,7 @@ function WardrobeContent() {
   const initialized = useRef(false);
 
   useEffect(() => {
+    if (!profile) return;
     initialized.current = false;
     setLoading(true);
     setItems(loadItems(profile));
@@ -41,7 +42,7 @@ function WardrobeContent() {
       initialized.current = true;
       return;
     }
-    saveItems(items, profile);
+    saveItems(items, profile ?? undefined);
   }, [items, profile]);
 
   const filteredItems = useMemo(() => {
