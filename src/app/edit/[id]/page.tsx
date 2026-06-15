@@ -30,7 +30,7 @@ export default function EditPage() {
       const { id: _id, createdAt: _c, ...values } = found;
       setForm(values);
     }
-  }, [id]);
+  }, [id, profile]);
 
   function updateField<K extends keyof WardrobeFormValues>(field: K, value: WardrobeFormValues[K]) {
     setForm((prev) => ({ ...prev, [field]: value }));
