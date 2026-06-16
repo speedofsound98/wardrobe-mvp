@@ -28,22 +28,25 @@ function WardrobeContent() {
   const [filterCategory, setFilterCategory] = useState(searchParams.get("category") ?? "all");
   const [loading, setLoading] = useState(true);
   const initialized = useRef(false);
+  const profileRef = useRef<typeof profile>(null);
 
   useEffect(() => {
     if (!profile) return;
+    profileRef.current = profile;
     initialized.current = false;
     setLoading(true);
     setItems(loadItems(profile));
     setLoading(false);
   }, [profile]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!initialized.current) {
       initialized.current = true;
       return;
     }
-    saveItems(items, profile ?? undefined);
-  }, [items, profile]);
+    saveItems(items, profileRef.current ?? undefined);
+  }, [items]);
 
   const filteredItems = useMemo(() => {
     if (filterCategory === "all") return items;
