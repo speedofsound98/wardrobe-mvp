@@ -48,7 +48,8 @@ function WardrobeContent() {
       initialized.current = true;
       return;
     }
-    saveItems(items, profileRef.current ?? undefined);
+    if (!profileRef.current) return;
+    saveItems(items, profileRef.current);
   }, [items]);
 
   const filteredItems = useMemo(() => {
