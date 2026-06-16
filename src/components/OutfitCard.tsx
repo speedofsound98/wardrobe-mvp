@@ -6,7 +6,12 @@ function ItemThumb({ item, label }: { item: WardrobeItem; label: string }) {
     <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-3">
       <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-slate-200">
         {item.imageUrl ? (
-          <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
+          <img
+            src={item.imageUrl}
+            alt={item.name}
+            className="h-full w-full object-cover"
+            style={item.imagePosition ? { objectPosition: `${item.imagePosition.x}% ${item.imagePosition.y}%` } : undefined}
+          />
         ) : (
           <div className="flex h-full items-center justify-center text-slate-400">
             <Shirt className="h-5 w-5" />

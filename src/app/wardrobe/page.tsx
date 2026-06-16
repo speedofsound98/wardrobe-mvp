@@ -146,7 +146,16 @@ function WardrobeContent() {
           ))}
         </div>
       )}
-      {viewItem && <ItemModal item={viewItem} onClose={() => setViewItem(null)} />}
+      {viewItem && (
+        <ItemModal
+          item={viewItem}
+          onClose={() => setViewItem(null)}
+          onUpdate={(updated) => {
+            setItems((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
+            setViewItem(updated);
+          }}
+        />
+      )}
     </>
   );
 }

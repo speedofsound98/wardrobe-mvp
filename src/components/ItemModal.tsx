@@ -1,16 +1,22 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { X, Pencil, Shirt } from "lucide-react";
+import { X, Pencil, Shirt, Move } from "lucide-react";
 import type { WardrobeItem } from "@/lib/types";
 
 type ItemModalProps = {
   item: WardrobeItem;
   onClose: () => void;
+  onUpdate?: (updated: WardrobeItem) => void;
 };
 
-export default function ItemModal({ item, onClose }: ItemModalProps) {
+export default function ItemModal({ item, onClose, onUpdate }: ItemModalProps) {
+  const [pos, setPos] = useState(item.imagePosition ?? { x: 50, y: 50 });
+  const [dragging, setDragging] = useState(false);
+  const imgRef = useRef<HTMLDivElement>(null);
+  const dragStart = useRef<{ mx: number; my: number; px: number; py: number } | null>(null);
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
@@ -18,6 +24,52 @@ export default function ItemModal({ item, onClose }: ItemModalProps) {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [onClose]);
+
+  const applyDelta = useCallback((clientX: number, clientY: number) => {
+    if (!dragStart.current || !imgRef.current) return;
+    const rect = imgRef.current.getBoundingClientRect();
+    const dx = ((dragStart.current.mx - clientX) / rect.width) * 100;
+    const dy = ((dragStart.current.my - clientY) / rect.height) * 100;
+    setPos({
+      x: Math.max(0, Math.min(100, dragStart.current.px + dx)),
+      y: Math.max(0, Math.min(100, dragStart.current.py + dy)),
+    });
+  }, []);
+
+  function onMouseDown(e: React.MouseEvent) {
+    e.preventDefault();
+    dragStart.current = { mx: e.clientX, my: e.clientY, px: pos.x, py: pos.y };
+    setDragging(true);
+  }
+
+  function onTouchStart(e: React.TouchEvent) {
+    const t = e.touches[0];
+    dragStart.current = { mx: t.clientX, my: t.clientY, px: pos.x, py: pos.y };
+    setDragging(true);
+  }
+
+  useEffect(() => {
+    if (!dragging) return;
+    function onMouseMove(e: MouseEvent) { applyDelta(e.clientX, e.clientY); }
+    function onTouchMove(e: TouchEvent) { applyDelta(e.touches[0].clientX, e.touches[0].clientY); }
+    function onUp() {
+      setDragging(false);
+      dragStart.current = null;
+      // save position
+      if (onUpdate) onUpdate({ ...item, imagePosition: pos });
+    }
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onUp);
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("touchend", onUp);
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onUp);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onUp);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dragging, pos, applyDelta]);
 
   const rows: [string, string][] = [
     ["Category", item.category],
@@ -47,12 +99,30 @@ export default function ItemModal({ item, onClose }: ItemModalProps) {
           <X className="h-4 w-4" />
         </button>
 
-        <div className="aspect-square w-full bg-slate-100">
+        {/* draggable image */}
+        <div
+          ref={imgRef}
+          className={`relative aspect-square w-full overflow-hidden bg-slate-100 select-none ${item.imageUrl ? (dragging ? "cursor-grabbing" : "cursor-grab") : ""}`}
+          onMouseDown={item.imageUrl ? onMouseDown : undefined}
+          onTouchStart={item.imageUrl ? onTouchStart : undefined}
+        >
           {item.imageUrl ? (
-            <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
+            <img
+              src={item.imageUrl}
+              alt={item.name}
+              draggable={false}
+              className="h-full w-full object-cover transition-none"
+              style={{ objectPosition: `${pos.x}% ${pos.y}%` }}
+            />
           ) : (
             <div className="flex h-full items-center justify-center text-slate-300">
               <Shirt className="h-16 w-16" />
+            </div>
+          )}
+          {item.imageUrl && (
+            <div className="absolute bottom-2 right-2 flex items-center gap-1 rounded-full bg-black/40 px-2 py-1 text-xs text-white backdrop-blur-sm">
+              <Move className="h-3 w-3" />
+              drag to reframe
             </div>
           )}
         </div>
