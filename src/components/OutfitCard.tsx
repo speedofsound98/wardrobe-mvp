@@ -16,7 +16,7 @@ function ItemThumb({ item, label }: { item: WardrobeItem; label: string }) {
       <div>
         <p className="text-xs font-medium uppercase tracking-wide text-slate-400">{label}</p>
         <p className="text-sm font-medium text-slate-900">{item.name}</p>
-        <p className="text-xs capitalize text-slate-500">{item.color} · {item.occasion}</p>
+        <p className="text-xs capitalize text-slate-500">{item.color} · {(item.occasions ?? []).join(", ")}</p>
       </div>
     </div>
   );

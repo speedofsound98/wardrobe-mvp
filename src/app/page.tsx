@@ -98,7 +98,7 @@ export default function HomePage() {
             <div className="min-w-0">
               <p className="truncate font-semibold text-slate-900">{lastAdded.name || "Untitled item"}</p>
               <p className="text-sm capitalize text-slate-500">
-                {lastAdded.category} · {lastAdded.color} · {lastAdded.occasion}
+                {lastAdded.category} · {lastAdded.color} · {(lastAdded.occasions ?? []).join(", ")}
               </p>
             </div>
             <Link

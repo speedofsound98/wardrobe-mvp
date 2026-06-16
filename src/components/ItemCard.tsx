@@ -6,12 +6,17 @@ type ItemCardProps = {
   item: WardrobeItem;
   onDelete: (id: string) => void;
   onToggleFavorite: (id: string) => void;
+  onView?: (item: WardrobeItem) => void;
 };
 
-export default function ItemCard({ item, onDelete, onToggleFavorite }: ItemCardProps) {
+export default function ItemCard({ item, onDelete, onToggleFavorite, onView }: ItemCardProps) {
   return (
     <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-      <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-slate-100">
+      <button
+        onClick={() => onView?.(item)}
+        className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-slate-100 focus:outline-none"
+        aria-label="View item details"
+      >
         {item.imageUrl ? (
           <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
         ) : (
@@ -19,14 +24,18 @@ export default function ItemCard({ item, onDelete, onToggleFavorite }: ItemCardP
             <Shirt className="h-6 w-6" />
           </div>
         )}
-      </div>
+      </button>
 
-      <div className="min-w-0 flex-1">
+      <button
+        onClick={() => onView?.(item)}
+        className="min-w-0 flex-1 text-left focus:outline-none"
+        aria-label="View item details"
+      >
         <p className="truncate text-sm font-semibold text-slate-900">{item.name || "Untitled item"}</p>
         <p className="truncate text-xs capitalize text-slate-500">
-          {item.category} · {item.color} · {item.occasion}
+          {item.category} · {item.color} · {(item.occasions ?? []).join(", ")}
         </p>
-      </div>
+      </button>
 
       <div className="flex shrink-0 items-center gap-1">
         <button

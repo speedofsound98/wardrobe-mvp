@@ -27,7 +27,7 @@ export const EMPTY_FORM: WardrobeFormValues = {
   subcategory: "",
   color: "black",
   season: "all",
-  occasion: "casual",
+  occasions: ["casual"],
   material: "",
   favorite: false,
 };
@@ -52,11 +52,18 @@ export function loadItems(profile?: Profile): WardrobeItem[] {
   try {
     const raw = localStorage.getItem(itemsKey(profile));
     const items: WardrobeItem[] = raw ? JSON.parse(raw) : [];
-    // migrate legacy "bottom" category to "pants"
-    return items.map((item) =>
+    return items.map((item) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (item.category as any) === "bottom" ? { ...item, category: "pants" } : item
-    );
+      const anyItem = item as any;
+      // migrate legacy "bottom" category to "pants"
+      if (anyItem.category === "bottom") anyItem.category = "pants";
+      // migrate legacy occasion string to occasions array
+      if (typeof anyItem.occasions === "undefined") {
+        anyItem.occasions = anyItem.occasion ? [anyItem.occasion] : ["casual"];
+        delete anyItem.occasion;
+      }
+      return anyItem as WardrobeItem;
+    });
   } catch {
     return [];
   }

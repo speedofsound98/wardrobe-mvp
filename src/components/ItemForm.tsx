@@ -126,19 +126,32 @@ export default function ItemForm({
         </select>
       </div>
 
-      <div>
-        <label className="mb-1 block text-sm font-medium">Occasion</label>
-        <select
-          value={form.occasion}
-          onChange={(e) => updateField("occasion", e.target.value)}
-          className="w-full rounded-2xl border border-slate-200 px-4 py-3"
-        >
-          {OCCASION_OPTIONS.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
+      <div className="md:col-span-2">
+        <label className="mb-2 block text-sm font-medium">Occasions</label>
+        <div className="flex flex-wrap gap-2">
+          {OCCASION_OPTIONS.map((option) => {
+            const selected = form.occasions.includes(option);
+            return (
+              <button
+                key={option}
+                type="button"
+                onClick={() => {
+                  const next = selected
+                    ? form.occasions.filter((o) => o !== option)
+                    : [...form.occasions, option];
+                  updateField("occasions", next.length ? next : [option]);
+                }}
+                className={`rounded-full border px-3 py-1 text-xs font-medium capitalize transition ${
+                  selected
+                    ? "border-slate-900 bg-slate-900 text-white"
+                    : "border-slate-200 bg-white text-slate-600 hover:border-slate-400"
+                }`}
+              >
+                {option}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div>

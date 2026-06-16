@@ -4,11 +4,13 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Download, Upload } from "lucide-react";
 import ItemCard from "@/components/ItemCard";
+import ItemModal from "@/components/ItemModal";
 import FilterBar from "@/components/FilterBar";
 import { CATEGORY_OPTIONS, loadItems, saveItems } from "@/lib/storage";
 import { exportToCsv, importFromCsv } from "@/lib/csv";
 import { useProfile } from "@/lib/useProfile";
 import type { WardrobeItem } from "@/lib/types";
+
 import Link from "next/link";
 
 function SkeletonCard() {
@@ -27,6 +29,7 @@ function WardrobeContent() {
   const [items, setItems] = useState<WardrobeItem[]>([]);
   const [filterCategory, setFilterCategory] = useState(searchParams.get("category") ?? "all");
   const [loading, setLoading] = useState(true);
+  const [viewItem, setViewItem] = useState<WardrobeItem | null>(null);
   const initialized = useRef(false);
   const profileRef = useRef<typeof profile>(null);
 
@@ -139,10 +142,11 @@ function WardrobeContent() {
       ) : (
         <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredItems.map((item) => (
-            <ItemCard key={item.id} item={item} onDelete={handleDelete} onToggleFavorite={handleToggleFavorite} />
+            <ItemCard key={item.id} item={item} onDelete={handleDelete} onToggleFavorite={handleToggleFavorite} onView={setViewItem} />
           ))}
         </div>
       )}
+      {viewItem && <ItemModal item={viewItem} onClose={() => setViewItem(null)} />}
     </>
   );
 }

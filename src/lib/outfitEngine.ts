@@ -14,8 +14,9 @@ function colorScore(a?: WardrobeItem | null, b?: WardrobeItem | null, c?: Wardro
 
 function occasionScore(item: WardrobeItem | null, occasion: string) {
   if (!item) return 0;
-  if (item.occasion === occasion) return 4;
-  if (occasion === "casual" && ["travel", "date"].includes(item.occasion)) return 2;
+  const occasions = item.occasions ?? [];
+  if (occasions.includes(occasion)) return 4;
+  if (occasion === "casual" && occasions.some((o) => ["travel", "date"].includes(o))) return 2;
   if (occasion === "work" && item.category === "shoes" && ["black", "brown", "navy"].includes(item.color)) return 2;
   return 0;
 }

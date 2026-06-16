@@ -11,7 +11,7 @@ export type WardrobeItem = {
   subcategory: string;
   color: string;
   season: string;
-  occasion: string;
+  occasions: string[];
   material: string;
   favorite: boolean;
   createdAt: string;

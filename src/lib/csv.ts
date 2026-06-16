@@ -2,11 +2,11 @@ import type { WardrobeItem } from "./types";
 
 const HEADERS: (keyof WardrobeItem)[] = [
   "id", "name", "category", "subcategory", "color", "season",
-  "occasion", "material", "favorite", "imageUrl", "sourceType", "sourceValue", "createdAt",
+  "occasions", "material", "favorite", "imageUrl", "sourceType", "sourceValue", "createdAt",
 ];
 
-function escape(value: string | boolean): string {
-  const str = String(value);
+function escape(value: string | boolean | string[]): string {
+  const str = Array.isArray(value) ? value.join("|") : String(value);
   if (str.includes(",") || str.includes('"') || str.includes("\n")) {
     return `"${str.replace(/"/g, '""')}"`;
   }
@@ -16,7 +16,7 @@ function escape(value: string | boolean): string {
 export function exportToCsv(items: WardrobeItem[]): void {
   const rows = [
     HEADERS.join(","),
-    ...items.map((item) => HEADERS.map((h) => escape(item[h])).join(",")),
+    ...items.map((item) => HEADERS.map((h) => escape(item[h] as string | boolean | string[])).join(",")),
   ];
   const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
@@ -43,7 +43,14 @@ export function importFromCsv(file: File): Promise<WardrobeItem[]> {
             const item: Partial<WardrobeItem> = {};
             headers.forEach((h, i) => {
               const val = values[i] ?? "";
-              (item as Record<string, unknown>)[h] = h === "favorite" ? val === "true" : val;
+              if (h === "favorite") (item as Record<string, unknown>)[h] = val === "true";
+              else if (h === "occasions") (item as Record<string, unknown>)[h] = val ? val.split("|") : ["casual"];
+              // migrate old CSVs that used "occasion" column
+              else if ((h as string) === "occasion") {
+                if (!(item as Record<string, unknown>)["occasions"]) {
+                  (item as Record<string, unknown>)["occasions"] = val ? [val] : ["casual"];
+                }
+              } else (item as Record<string, unknown>)[h] = val;
             });
             return item as WardrobeItem;
           });
