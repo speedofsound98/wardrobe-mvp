@@ -152,11 +152,3 @@ export function deleteSavedOutfit(id: string, profile?: Profile) {
   const outfits = loadSavedOutfits(profile).filter((o) => o.id !== id);
   localStorage.setItem(outfitsKey(profile), JSON.stringify(outfits));
 }
-
-export function updateItem(id: string, values: WardrobeFormValues, profile?: Profile) {
-  const items = loadItems(profile);
-  const updated = items.map((item) =>
-    item.id === id ? { ...item, ...values } : item
-  );
-  saveItems(updated, profile);
-}
