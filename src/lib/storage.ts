@@ -34,6 +34,7 @@ export const EMPTY_FORM: WardrobeFormValues = {
 
 const BASE_ITEMS_KEY = "wardrobe_items_v1";
 const BASE_OUTFITS_KEY = "wardrobe_saved_outfits_v1";
+const SHARED_ITEMS_KEY = "wardrobe_items_shared_v1";
 
 export function uid() {
   return Math.random().toString(36).slice(2, 10);
@@ -47,31 +48,89 @@ function outfitsKey(profile?: Profile) {
   return getStorageKey(BASE_OUTFITS_KEY, profile ?? getActiveProfile());
 }
 
-export function loadItems(profile?: Profile): WardrobeItem[] {
-  if (typeof window === "undefined") return [];
+function migrate(item: WardrobeItem): WardrobeItem {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const a = item as any;
+  if (a.category === "bottom") a.category = "pants";
+  if (typeof a.occasions === "undefined") {
+    a.occasions = a.occasion ? [a.occasion] : ["casual"];
+    delete a.occasion;
+  }
+  return a as WardrobeItem;
+}
+
+function parseItems(raw: string | null): WardrobeItem[] {
   try {
-    const raw = localStorage.getItem(itemsKey(profile));
-    const items: WardrobeItem[] = raw ? JSON.parse(raw) : [];
-    return items.map((item) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const anyItem = item as any;
-      // migrate legacy "bottom" category to "pants"
-      if (anyItem.category === "bottom") anyItem.category = "pants";
-      // migrate legacy occasion string to occasions array
-      if (typeof anyItem.occasions === "undefined") {
-        anyItem.occasions = anyItem.occasion ? [anyItem.occasion] : ["casual"];
-        delete anyItem.occasion;
-      }
-      return anyItem as WardrobeItem;
-    });
+    return raw ? (JSON.parse(raw) as WardrobeItem[]).map(migrate) : [];
   } catch {
     return [];
   }
 }
 
+function loadSharedItems(): WardrobeItem[] {
+  if (typeof window === "undefined") return [];
+  return parseItems(localStorage.getItem(SHARED_ITEMS_KEY)).map((i) => ({ ...i, shared: true }));
+}
+
+function saveSharedItems(items: WardrobeItem[]) {
+  if (typeof window === "undefined") return;
+  // strip the runtime-only `shared` flag before persisting
+  localStorage.setItem(SHARED_ITEMS_KEY, JSON.stringify(items.map(({ shared: _, ...i }) => i)));
+}
+
+export function loadItems(profile?: Profile): WardrobeItem[] {
+  if (typeof window === "undefined") return [];
+  const own = parseItems(localStorage.getItem(itemsKey(profile)));
+  const shared = loadSharedItems();
+  // de-dupe: if an item somehow appears in both, own copy wins
+  const ownIds = new Set(own.map((i) => i.id));
+  return [...own, ...shared.filter((i) => !ownIds.has(i.id))];
+}
+
 export function saveItems(items: WardrobeItem[], profile?: Profile) {
   if (typeof window === "undefined") return;
-  localStorage.setItem(itemsKey(profile), JSON.stringify(items));
+  const own = items.filter((i) => !i.shared);
+  const shared = items.filter((i) => i.shared);
+  localStorage.setItem(itemsKey(profile), JSON.stringify(own));
+  if (shared.length > 0) saveSharedItems(shared);
+}
+
+export function shareItem(id: string, ownerProfile: Profile) {
+  if (typeof window === "undefined") return;
+  // remove from owner's profile storage
+  const own = parseItems(localStorage.getItem(itemsKey(ownerProfile)));
+  const item = own.find((i) => i.id === id);
+  if (!item) return;
+  localStorage.setItem(itemsKey(ownerProfile), JSON.stringify(own.filter((i) => i.id !== id)));
+  // add to shared pool
+  const shared = loadSharedItems();
+  saveSharedItems([...shared.filter((i) => i.id !== id), item]);
+}
+
+export function unshareItem(id: string, toProfile: Profile) {
+  if (typeof window === "undefined") return;
+  const shared = loadSharedItems();
+  const item = shared.find((i) => i.id === id);
+  if (!item) return;
+  // move from shared pool to the requesting profile
+  saveSharedItems(shared.filter((i) => i.id !== id));
+  const own = parseItems(localStorage.getItem(itemsKey(toProfile)));
+  localStorage.setItem(itemsKey(toProfile), JSON.stringify([...own.filter((i) => i.id !== id), { ...item, shared: undefined }]));
+}
+
+export function updateItem(id: string, values: WardrobeFormValues, profile?: Profile) {
+  // item might live in own storage or shared pool
+  const ownKey = itemsKey(profile);
+  const own = parseItems(localStorage.getItem(ownKey));
+  if (own.some((i) => i.id === id)) {
+    localStorage.setItem(ownKey, JSON.stringify(own.map((i) => (i.id === id ? { ...i, ...values } : i))));
+    return;
+  }
+  // try shared pool
+  const shared = loadSharedItems();
+  if (shared.some((i) => i.id === id)) {
+    saveSharedItems(shared.map((i) => (i.id === id ? { ...i, ...values } : i)));
+  }
 }
 
 export function loadSavedOutfits(profile?: Profile): SavedOutfit[] {

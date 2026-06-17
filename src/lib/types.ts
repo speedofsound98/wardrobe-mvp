@@ -14,6 +14,7 @@ export type WardrobeItem = {
   occasions: string[];
   material: string;
   favorite: boolean;
+  shared?: boolean;
   imagePosition?: { x: number; y: number };
   createdAt: string;
 };
