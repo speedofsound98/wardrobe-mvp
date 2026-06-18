@@ -6,7 +6,7 @@ import { Download, Upload } from "lucide-react";
 import ItemCard from "@/components/ItemCard";
 import ItemModal from "@/components/ItemModal";
 import FilterBar from "@/components/FilterBar";
-import { CATEGORY_OPTIONS, loadItems, saveItems } from "@/lib/storage";
+import { CATEGORY_OPTIONS, loadItems, saveItems, shareItem, unshareItem } from "@/lib/storage";
 import { exportToCsv, importFromCsv } from "@/lib/csv";
 import { useProfile } from "@/lib/useProfile";
 import type { WardrobeItem } from "@/lib/types";
@@ -58,7 +58,26 @@ function WardrobeContent() {
   }, [items, filterCategory]);
 
   function handleDelete(id: string) {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+    const item = items.find((i) => i.id === id);
+    if (item?.shared && profileRef.current) {
+      // unshare instead of delete — moves item to current profile's own storage
+      unshareItem(id, profileRef.current);
+    }
+    setItems((prev) => prev.filter((i) => i.id !== id));
+  }
+
+  function handleShare(id: string) {
+    if (!profileRef.current) return;
+    shareItem(id, profileRef.current);
+    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, shared: true } : i)));
+    setViewItem((prev) => prev?.id === id ? { ...prev, shared: true } : prev);
+  }
+
+  function handleUnshare(id: string) {
+    if (!profileRef.current) return;
+    unshareItem(id, profileRef.current);
+    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, shared: false } : i)));
+    setViewItem((prev) => prev?.id === id ? { ...prev, shared: false } : prev);
   }
 
   function handleToggleFavorite(id: string) {
@@ -150,11 +169,14 @@ function WardrobeContent() {
       {viewItem && (
         <ItemModal
           item={viewItem}
+          profile={profile}
           onClose={() => setViewItem(null)}
           onUpdate={(updated) => {
             setItems((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
             setViewItem(updated);
           }}
+          onShare={() => handleShare(viewItem.id)}
+          onUnshare={() => handleUnshare(viewItem.id)}
         />
       )}
     </>

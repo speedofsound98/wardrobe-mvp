@@ -2,16 +2,20 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { X, Pencil, Shirt, Move } from "lucide-react";
+import { X, Pencil, Shirt, Move, Users } from "lucide-react";
 import type { WardrobeItem } from "@/lib/types";
+import type { Profile } from "@/lib/profiles";
 
 type ItemModalProps = {
   item: WardrobeItem;
   onClose: () => void;
   onUpdate?: (updated: WardrobeItem) => void;
+  onShare?: () => void;
+  onUnshare?: () => void;
+  profile?: Profile | null;
 };
 
-export default function ItemModal({ item, onClose, onUpdate }: ItemModalProps) {
+export default function ItemModal({ item, onClose, onUpdate, onShare, onUnshare, profile }: ItemModalProps) {
   const [pos, setPos] = useState(item.imagePosition ?? { x: 50, y: 50 });
   const [dragging, setDragging] = useState(false);
   const imgRef = useRef<HTMLDivElement>(null);
@@ -128,15 +132,30 @@ export default function ItemModal({ item, onClose, onUpdate }: ItemModalProps) {
         </div>
 
         <div className="p-5">
-          <div className="mb-4 flex items-start justify-between gap-3">
+          <div className="mb-4 flex items-start justify-between gap-2">
             <h2 className="text-xl font-bold text-slate-900">{item.name || "Untitled item"}</h2>
-            <Link
-              href={`/edit/${item.id}`}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50"
-            >
-              <Pencil className="h-3.5 w-3.5" />
-              Edit
-            </Link>
+            <div className="flex shrink-0 items-center gap-1.5">
+              {(onShare || onUnshare) && (
+                <button
+                  onClick={item.shared ? onUnshare : onShare}
+                  className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition ${
+                    item.shared
+                      ? "border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100"
+                      : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  <Users className="h-3.5 w-3.5" />
+                  {item.shared ? "Shared" : `Share with ${profile === "his" ? "Hers" : "His"}`}
+                </button>
+              )}
+              <Link
+                href={`/edit/${item.id}`}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                Edit
+              </Link>
+            </div>
           </div>
 
           <dl className="grid grid-cols-2 gap-x-4 gap-y-2">

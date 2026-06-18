@@ -1,4 +1,4 @@
-import { Heart, Pencil, Shirt, Trash2 } from "lucide-react";
+import { Heart, Pencil, Shirt, Trash2, Users } from "lucide-react";
 import Link from "next/link";
 import type { WardrobeItem } from "@/lib/types";
 
@@ -36,7 +36,10 @@ export default function ItemCard({ item, onDelete, onToggleFavorite, onView }: I
         className="min-w-0 flex-1 text-left focus:outline-none"
         aria-label="View item details"
       >
-        <p className="truncate text-sm font-semibold text-slate-900">{item.name || "Untitled item"}</p>
+        <div className="flex items-center gap-1.5">
+          <p className="truncate text-sm font-semibold text-slate-900">{item.name || "Untitled item"}</p>
+          {item.shared && <Users className="h-3 w-3 shrink-0 text-violet-400" aria-label="Shared" />}
+        </div>
         <p className="truncate text-xs capitalize text-slate-500">
           {item.category} · {item.color} · {(item.occasions ?? []).join(", ")}
         </p>
