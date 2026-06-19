@@ -2,9 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shirt, PlusCircle, Sparkles, LayoutDashboard, BookMarked } from "lucide-react";
+import { Shirt, PlusCircle, Sparkles, LayoutDashboard, BookMarked, Sun, Snowflake, Leaf } from "lucide-react";
 import { PROFILES } from "@/lib/profiles";
 import { useProfile } from "@/lib/useProfile";
+import { useSeason, type SeasonMode } from "@/lib/useSeason";
+
+const SEASON_MODES: { mode: SeasonMode; icon: React.ElementType; label: string }[] = [
+  { mode: "all", icon: Leaf, label: "All seasons" },
+  { mode: "summer", icon: Sun, label: "Summer" },
+  { mode: "winter", icon: Snowflake, label: "Winter" },
+];
 
 const links = [
   { href: "/", label: "Home", icon: LayoutDashboard },
@@ -17,6 +24,7 @@ const links = [
 export default function Nav() {
   const pathname = usePathname();
   const [profile, switchProfile] = useProfile();
+  const [season, switchSeason] = useSeason();
 
   return (
     <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/80 backdrop-blur">
@@ -33,6 +41,22 @@ export default function Nav() {
                 } ${profile === null ? "opacity-0" : ""}`}
               >
                 {p}
+              </button>
+            ))}
+          </div>
+
+          {/* season toggle */}
+          <div className={`flex rounded-xl border border-slate-200 bg-slate-100 p-0.5 transition-opacity ${season === null ? "opacity-0" : ""}`}>
+            {SEASON_MODES.map(({ mode, icon: Icon, label }) => (
+              <button
+                key={mode}
+                onClick={() => switchSeason(mode)}
+                title={label}
+                className={`rounded-lg p-1.5 transition-colors ${
+                  season === mode ? "bg-white text-slate-900 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                }`}
+              >
+                <Icon className="h-3.5 w-3.5" />
               </button>
             ))}
           </div>

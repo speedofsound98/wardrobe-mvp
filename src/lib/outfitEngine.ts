@@ -1,4 +1,5 @@
 import type { OutfitResult, WardrobeItem } from "./types";
+import { isSeasonActive, type SeasonMode } from "./useSeason";
 
 // Occasions where every item must match — no casual substitutes
 const STRICT_OCCASIONS = new Set(["running", "gym", "formal", "wedding"]);
@@ -39,8 +40,10 @@ function weatherScore(item: WardrobeItem | null, weather: string): number {
   return 1;
 }
 
-export function generateOutfits(items: WardrobeItem[], occasion: string, weather: string, topN = 10): OutfitResult[] {
+export function generateOutfits(items: WardrobeItem[], occasion: string, weather: string, topN = 10, seasonMode: SeasonMode = "all"): OutfitResult[] {
   const strict = STRICT_OCCASIONS.has(occasion);
+  // filter out off-season items before generating
+  items = items.filter((i) => isSeasonActive(i.season, seasonMode));
 
   function matchesOccasion(item: WardrobeItem) {
     return (item.occasions ?? []).includes(occasion);

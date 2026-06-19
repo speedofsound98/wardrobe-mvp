@@ -9,6 +9,7 @@ import FilterBar from "@/components/FilterBar";
 import { CATEGORY_OPTIONS, loadItems, saveItems, shareItem, unshareItem } from "@/lib/storage";
 import { exportToCsv, importFromCsv } from "@/lib/csv";
 import { useProfile } from "@/lib/useProfile";
+import { useSeason, isSeasonActive } from "@/lib/useSeason";
 import type { WardrobeItem } from "@/lib/types";
 
 import Link from "next/link";
@@ -26,6 +27,7 @@ function SkeletonCard() {
 function WardrobeContent() {
   const searchParams = useSearchParams();
   const [profile] = useProfile();
+  const [season] = useSeason();
   const [items, setItems] = useState<WardrobeItem[]>([]);
   const [filterCategory, setFilterCategory] = useState(searchParams.get("category") ?? "all");
   const [loading, setLoading] = useState(true);
@@ -161,9 +163,14 @@ function WardrobeContent() {
         </div>
       ) : (
         <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredItems.map((item) => (
-            <ItemCard key={item.id} item={item} onDelete={handleDelete} onToggleFavorite={handleToggleFavorite} onView={setViewItem} />
-          ))}
+          {filteredItems.map((item) => {
+            const offSeason = season !== null && !isSeasonActive(item.season, season);
+            return (
+              <div key={item.id} className={offSeason ? "opacity-35 grayscale" : ""} title={offSeason ? `Off-season (${item.season})` : undefined}>
+                <ItemCard item={item} onDelete={handleDelete} onToggleFavorite={handleToggleFavorite} onView={setViewItem} />
+              </div>
+            );
+          })}
         </div>
       )}
       {viewItem && (
