@@ -41,7 +41,8 @@ export default function ItemCard({ item, onDelete, onToggleFavorite, onView }: I
           {item.shared && <Users className="h-3 w-3 shrink-0 text-violet-400" aria-label="Shared" />}
         </div>
         <p className="truncate text-xs capitalize text-slate-500">
-          {item.category} · {item.color} · {(item.occasions ?? []).join(", ")}
+          {item.brand ? `${item.brand} · ` : ""}{item.category} · {item.color}
+          {(item.quantity ?? 1) > 1 && <span className="ml-1 rounded-full bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-600">×{item.quantity}</span>}
         </p>
       </button>
 

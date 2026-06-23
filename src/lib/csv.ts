@@ -2,7 +2,7 @@ import type { WardrobeItem } from "./types";
 
 const HEADERS: (keyof WardrobeItem)[] = [
   "id", "name", "category", "subcategory", "color", "season",
-  "occasions", "material", "favorite", "imageUrl", "sourceType", "sourceValue", "createdAt",
+  "occasions", "material", "brand", "quantity", "favorite", "imageUrl", "sourceType", "sourceValue", "createdAt",
 ];
 
 function escape(value: string | boolean | string[]): string {
@@ -44,6 +44,7 @@ export function importFromCsv(file: File): Promise<WardrobeItem[]> {
             headers.forEach((h, i) => {
               const val = values[i] ?? "";
               if (h === "favorite") (item as Record<string, unknown>)[h] = val === "true";
+              else if (h === "quantity") (item as Record<string, unknown>)[h] = val ? parseInt(val, 10) || 1 : 1;
               else if (h === "occasions") (item as Record<string, unknown>)[h] = val ? val.split("|") : ["casual"];
               // migrate old CSVs that used "occasion" column
               else if ((h as string) === "occasion") {

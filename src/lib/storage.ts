@@ -29,6 +29,8 @@ export const EMPTY_FORM: WardrobeFormValues = {
   season: "all",
   occasions: ["casual"],
   material: "",
+  brand: "",
+  quantity: 1,
   favorite: false,
 };
 
@@ -56,6 +58,8 @@ function migrate(item: WardrobeItem): WardrobeItem {
     a.occasions = a.occasion ? [a.occasion] : ["casual"];
     delete a.occasion;
   }
+  if (typeof a.brand === "undefined") a.brand = "";
+  if (typeof a.quantity === "undefined") a.quantity = 1;
   return a as WardrobeItem;
 }
 

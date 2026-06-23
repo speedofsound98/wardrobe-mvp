@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import ItemForm from "@/components/ItemForm";
 import { EMPTY_FORM, loadItems, saveItems, uid } from "@/lib/storage";
 import { useProfile } from "@/lib/useProfile";
@@ -64,9 +65,17 @@ export default function AddPage() {
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-10">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-slate-900">Add clothing item</h1>
-        <p className="mt-2 text-slate-600">Upload a photo and fill in the details.</p>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900">Add clothing item</h1>
+          <p className="mt-2 text-slate-600">Upload a photo and fill in the details.</p>
+        </div>
+        <Link
+          href="/add/variants"
+          className="shrink-0 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 shadow-sm transition hover:bg-slate-50"
+        >
+          + Add variants
+        </Link>
       </div>
 
       {uploadError && (

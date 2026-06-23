@@ -76,12 +76,14 @@ export default function ItemModal({ item, onClose, onUpdate, onShare, onUnshare,
   }, [dragging, pos, applyDelta]);
 
   const rows: [string, string][] = [
+    ["Brand", item.brand || "—"],
     ["Category", item.category],
     ["Subcategory", item.subcategory || "—"],
     ["Color", item.color],
     ["Season", item.season],
     ["Occasions", (item.occasions ?? []).join(", ") || "—"],
     ["Material", item.material || "—"],
+    ["Quantity", String(item.quantity ?? 1)],
     ["Favorite", item.favorite ? "Yes" : "No"],
     ["Added", new Date(item.createdAt).toLocaleDateString()],
   ];

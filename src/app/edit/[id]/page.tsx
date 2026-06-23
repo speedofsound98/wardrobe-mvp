@@ -10,7 +10,7 @@ import type { WardrobeFormValues, WardrobeItem } from "@/lib/types";
 const EMPTY_FORM: WardrobeFormValues = {
   name: "", imageUrl: "", sourceType: "manual", sourceValue: "",
   category: "top", subcategory: "", color: "black", season: "all",
-  occasions: ["casual"], material: "", favorite: false,
+  occasions: ["casual"], material: "", brand: "", quantity: 1, favorite: false,
 };
 
 export default function EditPage() {

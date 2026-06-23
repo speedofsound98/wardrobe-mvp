@@ -13,6 +13,8 @@ export type WardrobeItem = {
   season: string;
   occasions: string[];
   material: string;
+  brand: string;
+  quantity: number;
   favorite: boolean;
   shared?: boolean;
   imagePosition?: { x: number; y: number };

@@ -164,6 +164,27 @@ export default function ItemForm({
         />
       </div>
 
+      <div>
+        <label className="mb-1 block text-sm font-medium">Brand</label>
+        <input
+          value={form.brand}
+          onChange={(e) => updateField("brand", e.target.value)}
+          placeholder="Uniqlo, Zara, Levi's…"
+          className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none placeholder:text-slate-400 focus:border-slate-400"
+        />
+      </div>
+
+      <div>
+        <label className="mb-1 block text-sm font-medium">Quantity</label>
+        <input
+          type="number"
+          min={1}
+          value={form.quantity}
+          onChange={(e) => updateField("quantity", Math.max(1, parseInt(e.target.value) || 1))}
+          className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-slate-400"
+        />
+      </div>
+
       <div className="md:col-span-2 flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
         <label className="flex items-center gap-2 text-sm font-medium">
           <input
